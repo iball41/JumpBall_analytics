@@ -138,6 +138,9 @@
     z-index: 100;
   }
 
+  /* Hidden on desktop, shown on mobile */
+  #mobile-nav { display: none; }
+
   /* ══════════════════════════════════════
      SLIDE 1 — TITLE
   ══════════════════════════════════════ */
@@ -603,9 +606,125 @@
   #s9 .tech-table td:first-child { color: var(--orange); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
   #s9 .tech-table td:nth-child(2) { color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
   #s9 .tech-table td:nth-child(3) { color: var(--muted); }
+
+  /* ══════════════════════════════════════
+     MOBILE — SCROLLABLE LAYOUT (≤ 680px)
+     Desktop slide deck is fully preserved.
+     On mobile, slides become stacked sections.
+  ══════════════════════════════════════ */
+  @media (max-width: 680px) {
+
+    /* Reset slide deck into scroll layout */
+    html, body { overflow: auto; height: auto; }
+    #deck { height: auto; overflow: visible; display: flex; flex-direction: column; }
+    .slide {
+      position: relative;
+      inset: auto;
+      opacity: 1;
+      pointer-events: all;
+      height: auto;
+      min-height: 100svh;
+      padding: 2rem 1.25rem 4rem;
+      border-bottom: 2px solid var(--navy3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Hide desktop nav */
+    #nav, #nav-arrows, #slide-counter { display: none; }
+
+    /* Mobile sticky header */
+    #mobile-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy);
+      border-bottom: 1px solid var(--navy3);
+      padding: 0.6rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #mobile-nav-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    #mobile-nav-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* Typography */
+    h1 { font-size: clamp(2rem, 9vw, 3rem); }
+    h2 { font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    h2 span { font-size: clamp(0.85rem, 3.5vw, 1.1rem); display: block; margin-top: 0.2rem; }
+
+    /* Slide 1 */
+    #s1 { justify-content: center; min-height: 100svh; }
+    #s1 h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+    #s1 .pills { flex-wrap: wrap; gap: 0.5rem; }
+
+    /* Slide 2: Solo video */
+    #s2 .single-video-wrap { margin-top: 0.75rem; }
+    #s2 .video-pane-solo { min-height: 220px; }
+    #s2 .controls { flex-wrap: wrap; gap: 0.5rem; }
+
+    /* Slide 3: Pipeline — vertical stack */
+    #s3 .pipeline-steps { flex-direction: column; gap: 0; margin-top: 1rem; }
+    .step { border-left: none; border-top: 1px solid rgba(255,255,255,0.05); border-radius: 0; padding: 1rem 1.2rem; }
+    .step:first-child { border-top: none; border-radius: 6px 6px 0 0; }
+    .step:last-child { border-radius: 0 0 6px 6px; }
+    .step-arrow { right: auto; top: auto; left: 50%; bottom: -10px; transform: translateX(-50%) rotate(90deg); }
+    #s3 .output-bar { font-size: 0.65rem; }
+
+    /* Slide 4: Detection */
+    #s4 .content-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .stat-val { font-size: clamp(1.8rem, 7vw, 3rem); }
+
+    /* Slide 5: Dual video — stack vertically */
+    #s5 .video-panes { grid-template-columns: 1fr; gap: 1rem; }
+    .video-pane { min-height: 200px; }
+    .video-pane video { max-height: 260px; }
+    #s5 .controls { flex-wrap: wrap; gap: 0.5rem; }
+
+    /* Slide 6: Pose cards */
+    #s6 .kp-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+
+    /* Slide 7: Scorecard */
+    #s7 .scorecard-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+    #s6-steps { top: 2rem; right: 1.25rem; }
+    #s7 .insight { font-size: 0.85rem; }
+
+    /* Slide 8: What's next */
+    #s8 .next-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+
+    /* Slide 9: Table — hide notes col on small screens */
+    #s9 .tech-table th { font-size: 0.55rem; padding: 0.4rem 0.5rem; }
+    #s9 .tech-table td { padding: 0.45rem 0.5rem; font-size: 0.7rem; }
+    #s9 .tech-table th:nth-child(3),
+    #s9 .tech-table td:nth-child(3) { display: none; }
+
+    /* Bigger tap targets */
+    .ctrl-btn { padding: 0.55rem 1rem; font-size: 0.75rem; }
+
+    /* Reveal items visible by default on mobile (no click/timer needed) */
+    .reveal-item { opacity: 1; transform: none; pointer-events: all; }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- Mobile-only sticky nav -->
+<div id="mobile-nav">
+  <span id="mobile-nav-title">🏀 Basketball CV Analysis</span>
+  <span id="mobile-nav-count">Scroll to explore · 9 sections</span>
+</div>
 
 <div id="deck">
 
