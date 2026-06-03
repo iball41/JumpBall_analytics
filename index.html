@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Basketball CV Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:    #F8F6F2;
+    --navy2:   #F0EDE7;
+    --navy3:   #E8E3DB;
+    --orange:  #C2501F;
+    --orange2: #D4622E;
+    --cyan:    #1A6B7A;
+    --white:   #1C1A17;
+    --muted:   #6B6157;
+    --dim:     #A89E92;
+    --green:   #2D7A3A;
+    --red:     #B83232;
+    --purple:  #6B3FA0;
+    --yellow:  #8A6A00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  /* ── SLIDE CONTAINER ── */
+  #deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 3.5rem 4rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    background: var(--navy);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .slide-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 0.4rem;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 800;
+    line-height: 1.0;
+    color: var(--white);
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+  }
+  h2 span { color: var(--muted); font-weight: 400; font-size: 1.5rem; }
+  .sub {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-weight: 300;
+  }
+  .accent-bar {
+    width: 3rem; height: 3px;
+    background: var(--orange);
+    margin: 0.8rem 0 1.5rem;
+    border-radius: 2px;
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 0.5rem;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+
+  #nav-arrows {
+    position: fixed;
+    bottom: 1.6rem; right: 2.5rem;
+    display: flex; gap: 0.5rem;
+    z-index: 100;
+  }
+  .arrow {
+    width: 2rem; height: 2rem;
+    border: 1px solid var(--dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    background: rgba(248,246,242,0.9);
+  }
+  .arrow:hover { border-color: var(--orange); color: var(--orange); }
+
+  #slide-counter {
+    position: fixed;
+    bottom: 2rem; left: 2.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    z-index: 100;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 1 — TITLE
+  ══════════════════════════════════════ */
+  #s1 {
+    justify-content: center;
+    background: var(--navy);
+  }
+  #s1 .ball-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+  #s1 h1 {
+    font-size: 5rem;
+    background: linear-gradient(135deg, #1C1A17 40%, var(--orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #s1 .tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-top: 1.5rem;
+  }
+  #s1 .pills {
+    display: flex; gap: 0.75rem;
+    margin-top: 2rem; flex-wrap: wrap;
+  }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--dim);
+    border-radius: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  #s1 .bg-circle {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(194,80,31,0.08) 0%, transparent 70%);
+    right: -100px; top: -100px;
+    pointer-events: none;
+  }
+  #s1 .bg-circle2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,107,122,0.06) 0%, transparent 70%);
+    left: -80px; bottom: -80px;
+    pointer-events: none;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 2 — WHAT DO YOU SEE? (single video)
+  ══════════════════════════════════════ */
+  #s2 .single-video-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-top: 1rem;
+  }
+  #s2 .video-pane-solo {
+    background: var(--navy3);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  #s2 .video-pane-solo video {
+    width: 100%; flex: 1;
+    object-fit: contain;
+    display: block;
+    min-height: 0;
+  }
+  #s2 .video-label {
+    padding: 0.5rem 0.8rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--orange);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  #s2 .video-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  #s2 .controls {
+    display: flex; gap: 0.8rem; align-items: center;
+    margin-top: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 3 — PIPELINE (scaled up for fullscreen)
+  ══════════════════════════════════════ */
+  #s3 .pipeline-steps {
+    display: flex; gap: 0; margin-top: 1.5rem; flex: 1; align-items: stretch;
+  }
+  .step {
+    flex: 1;
+    background: var(--navy3);
+    padding: clamp(1.2rem, 2vw, 2rem) clamp(1rem, 1.5vw, 1.8rem);
+    display: flex; flex-direction: column;
+    position: relative;
+    border-left: 1px solid rgba(255,255,255,0.05);
+  }
+  .step:first-child { border-left: none; border-radius: 6px 0 0 6px; }
+  .step:last-child { border-radius: 0 6px 6px 0; }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.9vw, 1rem);
+    color: var(--orange);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.8rem;
+  }
+  .step-icon { font-size: clamp(1.6rem, 2.8vw, 3rem); margin-bottom: 0.6rem; }
+  .step h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1rem, 1.4vw, 1.6rem); font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .step p { font-size: clamp(0.75rem, 1vw, 1.1rem); color: var(--muted); line-height: 1.5; }
+  .step-arrow {
+    position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    background: var(--navy);
+    border: 1px solid var(--orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: var(--orange);
+    z-index: 2;
+  }
+  .step:last-child .step-arrow { display: none; }
+  #s3 .output-bar {
+    margin-top: 1.2rem;
+    padding: clamp(0.6rem, 0.8vw, 1rem) clamp(1rem, 1.2vw, 1.5rem);
+    background: var(--navy3);
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.85vw, 1rem);
+    color: var(--muted);
+    border-left: 3px solid var(--orange);
+  }
+  #s3 .output-bar span { color: var(--cyan); }
+
+  /* ══════════════════════════════════════
+     SLIDE 4 — DETECTION (scaled up)
+  ══════════════════════════════════════ */
+  #s4 .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 2rem; flex: 1; margin-top: 1rem;
+    min-height: 0;
+  }
+  .stat-cards { display: flex; flex-direction: column; gap: 0.8rem; }
+  .stat-card {
+    background: var(--navy3);
+    border-radius: 6px;
+    padding: clamp(0.8rem, 1.2vw, 1.6rem) clamp(1rem, 1.4vw, 1.8rem);
+    display: flex; align-items: center; gap: 1rem;
+    border-left: 3px solid var(--orange);
+  }
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 3.5vw, 4.5rem); font-weight: 800;
+    color: var(--orange); line-height: 1;
+    min-width: 4rem;
+  }
+  .stat-label { font-size: clamp(0.85rem, 1.1vw, 1.3rem); color: var(--muted); }
+  .chart-area {
+    background: var(--navy3);
+    border-radius: 6px;
+    padding: clamp(1rem, 1.4vw, 1.8rem);
+    display: flex; flex-direction: column;
+  }
+  .chart-title {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.85vw, 1rem); letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  .bar-chart { flex: 1; display: flex; flex-direction: column; gap: 0.45rem; justify-content: center; }
+  .bar-row { display: flex; align-items: center; gap: 0.6rem; }
+  .bar-id {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.85vw, 1rem); color: var(--muted);
+    width: 2.5rem; text-align: right; flex-shrink: 0;
+  }
+  .bar-track { flex: 1; height: clamp(18px, 2.2vh, 30px); background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--cyan);
+    transition: width 1s ease;
+  }
+  .bar-fill.orange { background: var(--orange); }
+  .bar-val {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.85vw, 1rem); color: var(--muted);
+    width: 2rem; flex-shrink: 0;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 5 — JUMP BALL VIDEO (two panes)
+  ══════════════════════════════════════ */
+  #s5 .video-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    flex: 1; margin-top: 1rem;
+    min-height: 0;
+  }
+  .video-pane {
+    background: var(--navy3);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .video-pane video {
+    width: 100%; flex: 1;
+    object-fit: cover;
+    display: block;
+    min-height: 0;
+  }
+  .video-label {
+    padding: 0.5rem 0.8rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--orange);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .video-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  #s5 .controls {
+    display: flex; gap: 0.8rem; align-items: center;
+    margin-top: 0.8rem;
+    flex-shrink: 0;
+  }
+  .ctrl-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--orange);
+    background: transparent;
+    color: var(--orange);
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+  .ctrl-btn:hover, .ctrl-btn.active {
+    background: var(--orange);
+    color: var(--navy);
+  }
+  .speed-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; color: var(--muted);
+    margin-left: auto;
+  }
+  #speed-display {
+    color: var(--orange);
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 6 — JUMP BALL ANALYSIS (scaled + pop insight)
+  ══════════════════════════════════════ */
+  #s7 .scorecard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem; flex: 1; margin-top: 1rem; min-height: 0;
+  }
+  .scorecard {
+    background: var(--navy3);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .card-header {
+    padding: clamp(0.8rem, 1.2vw, 1.6rem) clamp(1rem, 1.4vw, 1.8rem) clamp(0.6rem, 0.9vw, 1.2rem);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .player-id {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 4vw, 5.5rem); font-weight: 800;
+    line-height: 1;
+  }
+  .player-desc {
+    font-size: clamp(0.8rem, 1.1vw, 1.3rem); color: var(--muted);
+    font-style: italic; margin-top: 0.2rem;
+  }
+  .metrics { flex: 1; padding: clamp(0.4rem, 0.7vw, 1rem) clamp(1rem, 1.4vw, 1.8rem); display: flex; flex-direction: column; gap: 0.2rem; }
+  .metric-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: clamp(0.4rem, 0.7vw, 1rem) 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: clamp(0.85rem, 1.2vw, 1.4rem);
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-name { display: flex; align-items: center; gap: 0.5rem; color: var(--muted); }
+  .metric-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .won { color: var(--green); font-weight: 600; }
+  .lost { color: var(--red); font-weight: 600; }
+  .travel { color: var(--cyan); font-weight: 700; font-family: 'DM Mono', monospace; font-size: clamp(0.9rem, 1.2vw, 1.4rem); }
+
+  /* ── REVEAL SYSTEM ── */
+  .reveal-item {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+  .reveal-item.revealed {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  /* Step indicator dots for slide 6 */
+  #s6-steps {
+    position: absolute;
+    top: 3.5rem;
+    right: 4rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .step-pip {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .step-pip.lit { background: var(--orange); transform: scale(1.4); }
+
+  /* Popped insight box */
+  #s7 .insight {
+    margin-top: 1rem;
+    padding: clamp(0.9rem, 1.2vw, 1.6rem) clamp(1.2rem, 1.6vw, 2rem);
+    background: #FFF8E7;
+    border-radius: 6px;
+    border-left: 5px solid var(--yellow);
+    border: 1px solid rgba(138,106,0,0.25);
+    border-left: 5px solid var(--yellow);
+    font-size: clamp(0.9rem, 1.2vw, 1.4rem);
+    color: #4A3800;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 2px 12px rgba(138,106,0,0.12);
+  }
+  #s7 .insight .bulb {
+    font-size: clamp(1.4rem, 2vw, 2.4rem);
+    flex-shrink: 0;
+  }
+  #s7 .insight strong { color: #2A1F00; font-weight: 700; }
+
+  /* ══════════════════════════════════════
+     SLIDE 7 — POSE ESTIMATION (scaled up)
+  ══════════════════════════════════════ */
+  #s6 .kp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem; margin-top: 1rem; flex: 1; min-height: 0;
+  }
+  .kp-card {
+    background: var(--navy3);
+    border-radius: 8px;
+    padding: clamp(1.2rem, 1.8vw, 2.4rem);
+    display: flex; flex-direction: column;
+  }
+  .kp-dot {
+    width: clamp(2rem, 3vw, 4rem); height: clamp(2rem, 3vw, 4rem);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+  .kp-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 2rem); font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .kp-card p { font-size: clamp(0.8rem, 1.1vw, 1.3rem); color: var(--muted); line-height: 1.6; flex: 1; }
+  .kp-result {
+    margin-top: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.9vw, 1.1rem);
+    color: var(--orange);
+    letter-spacing: 0.05em;
+  }
+  #s6 .displacement-note {
+    margin-top: 1rem;
+    padding: clamp(0.6rem, 0.9vw, 1.2rem) clamp(1rem, 1.3vw, 1.6rem);
+    background: var(--navy3);
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.65rem, 0.85vw, 1rem); color: var(--dim);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  #s6 .displacement-note span { color: var(--muted); }
+
+  /* ══════════════════════════════════════
+     SLIDE 8 — WHAT'S NEXT
+  ══════════════════════════════════════ */
+  #s8 .next-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem; margin-top: 1rem; flex: 1; min-height: 0;
+  }
+  .next-card {
+    background: var(--navy3);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    display: flex; gap: 0.8rem; align-items: flex-start;
+  }
+  .next-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1; margin-top: 0.1rem; }
+  .next-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .next-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  /* ══════════════════════════════════════
+     SLIDE 9 — APPENDIX
+  ══════════════════════════════════════ */
+  #s9 .tech-table {
+    width: 100%; margin-top: 1rem;
+    border-collapse: collapse;
+    flex: 1;
+  }
+  #s9 .tech-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.5rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid var(--dim);
+  }
+  #s9 .tech-table td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  #s9 .tech-table tr:hover td { background: var(--navy3); }
+  #s9 .tech-table td:first-child { color: var(--orange); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+  #s9 .tech-table td:nth-child(2) { color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+  #s9 .tech-table td:nth-child(3) { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ══ SLIDE 1: TITLE ══ -->
+  <div class="slide active" id="s1">
+    <div class="bg-circle"></div>
+    <div class="bg-circle2"></div>
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; position:relative; z-index:1;">
+      <div class="slide-label">Basketball · Computer Vision · 2026</div>
+      <div class="ball-icon">🏀</div>
+      <h1>Basketball<br/>CV Analysis</h1>
+      <div class="accent-bar"></div>
+      <p class="sub">Player tracking · Pose estimation · Jump ball analysis</p>
+      <div class="pills">
+        <span class="pill">Prototype</span>
+        <span class="pill">iPhone Footage</span>
+        <span class="pill">Google Colab T4</span>
+        <span class="pill">YOLOv8 + ByteTrack</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: WHAT DO YOU SEE? ══ -->
+  <div class="slide" id="s2">
+    <div class="slide-label">Jump Ball · Raw Footage</div>
+    <h2>What do you See?</h2>
+    <div class="accent-bar"></div>
+    <div class="single-video-wrap">
+      <div class="video-pane-solo">
+        <video id="vid-solo" loop playsinline muted>
+          <source src="jumpball_overlay.mp4" type="video/mp4"/>
+        </video>
+        <div class="video-label">
+          Original
+          <span class="video-caption">Raw iPhone · 1080p 30fps</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn" id="btn-play-solo" onclick="togglePlaySolo()">▶ Play</button>
+        <button class="ctrl-btn" onclick="setSoloSpeed(1.0)">1×</button>
+        <button class="ctrl-btn active" onclick="setSoloSpeed(0.3)">0.3×</button>
+        <button class="ctrl-btn" onclick="setSoloSpeed(0.1)">0.1×</button>
+        <span class="speed-label">Speed: <span id="speed-display-solo">0.3×</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: PIPELINE ══ -->
+  <div class="slide" id="s3">
+    <div class="slide-label">Overview</div>
+    <h2>Analysis Pipeline <span>· From raw iPhone footage to structured player data in 5 steps</span></h2>
+    <div class="accent-bar"></div>
+    <div class="pipeline-steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">🎥</div>
+        <h3>Stabilize</h3>
+        <p>Optical flow shake reduction</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">🔍</div>
+        <h3>Detect</h3>
+        <p>YOLOv8x players + ball</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">🎯</div>
+        <h3>Track</h3>
+        <p>ByteTrack consistent IDs</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-icon">🦴</div>
+        <h3>Pose</h3>
+        <p>17 keypoints per player</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-icon">📊</div>
+        <h3>Analyze</h3>
+        <p>Trajectories &amp; heatmaps</p>
+      </div>
+    </div>
+    <div class="output-bar">
+      OUTPUT →
+      <span>basketball_analysis.json</span> ·
+      <span>basketball_players.csv</span> ·
+      <span>player_summary.csv</span> ·
+      <span>jumpball_overlay.mp4</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: DETECTION ══ -->
+  <div class="slide" id="s4">
+    <div class="slide-label">Detection + Tracking</div>
+    <h2>Who's on the court?</h2>
+    <div class="accent-bar"></div>
+    <div class="content-grid">
+      <div>
+        <p class="sub" style="margin-bottom:1.2rem;">YOLOv8x detects every person and ball in each frame. ByteTrack assigns consistent IDs so players are followed reliably across the entire clip.</p>
+        <div class="stat-cards">
+          <div class="stat-card"><div class="stat-val">10</div><div class="stat-label">Players tracked</div></div>
+          <div class="stat-card"><div class="stat-val">450</div><div class="stat-label">Frames processed</div></div>
+          <div class="stat-card"><div class="stat-val">0.35</div><div class="stat-label">Confidence threshold</div></div>
+        </div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-title">Frames Visible Per Player</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-id">ID 2</div><div class="bar-track"><div class="bar-fill" style="width:33%"></div></div><div class="bar-val">42</div></div>
+          <div class="bar-row"><div class="bar-id">ID 6</div><div class="bar-track"><div class="bar-fill orange" style="width:41%"></div></div><div class="bar-val">52</div></div>
+          <div class="bar-row"><div class="bar-id">ID 10</div><div class="bar-track"><div class="bar-fill" style="width:43%"></div></div><div class="bar-val">55</div></div>
+          <div class="bar-row"><div class="bar-id">ID 7</div><div class="bar-track"><div class="bar-fill" style="width:45%"></div></div><div class="bar-val">58</div></div>
+          <div class="bar-row"><div class="bar-id">ID 5</div><div class="bar-track"><div class="bar-fill orange" style="width:56%"></div></div><div class="bar-val">71</div></div>
+          <div class="bar-row"><div class="bar-id">ID 9</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">128</div></div>
+        </div>
+        <div style="margin-top:0.8rem; font-size:0.7rem; color:var(--muted); display:flex; align-items:center; gap:0.4rem;">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block;flex-shrink:0;"></span>
+          Jump ball players (ID5 &amp; ID6)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: JUMP BALL VIDEO ══ -->
+  <div class="slide" id="s5">
+    <div class="slide-label">Jump Ball · Video Evidence</div>
+    <h2>See It Live <span>· Same moment, two views</span></h2>
+    <div class="accent-bar"></div>
+    <div class="video-panes">
+      <div class="video-pane">
+        <video id="vid-orig" loop playsinline muted>
+          <source src="jumpball_overlay.mp4" type="video/mp4"/>
+        </video>
+        <div class="video-label">
+          Original
+          <span class="video-caption">Raw iPhone · 1080p 30fps</span>
+        </div>
+      </div>
+      <div class="video-pane">
+        <video id="vid-overlay" loop playsinline muted>
+          <source src="stabilized.mp4" type="video/mp4"/>
+        </video>
+        <div class="video-label">
+          Measurement Overlay
+          <span class="video-caption">Wrist · Hip · Ankle · Rulers</span>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="ctrl-btn" id="btn-play" onclick="togglePlay()">▶ Play</button>
+      <button class="ctrl-btn" onclick="setSpeed(1.0)">1×</button>
+      <button class="ctrl-btn active" onclick="setSpeed(0.3)">0.3×</button>
+      <button class="ctrl-btn" onclick="setSpeed(0.1)">0.1×</button>
+      <span class="speed-label">Speed: <span id="speed-display">0.3×</span></span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: POSE ESTIMATION ══ -->
+  <div class="slide" id="s6">
+    <div class="slide-label">Pose Estimation</div>
+    <h2>17 COCO keypoints <span>· Tracked per player per frame</span></h2>
+    <div class="accent-bar"></div>
+    <div class="kp-grid">
+      <div class="kp-card">
+        <div class="kp-dot" style="background:#22C55E"></div>
+        <h3>Wrist</h3>
+        <p>Tracks reaching height — how high each player's hand gets during the jump. Pure measure of arm extension at peak.</p>
+        <div class="kp-result">ID6 peaked higher due to arm length</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-dot" style="background:#A855F7"></div>
+        <h3>Hip</h3>
+        <p>Center of mass — the purest measure of overall body elevation off the floor. Accounts for starting squat position.</p>
+        <div class="kp-result">Accounts for starting squat position</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-dot" style="background:#EAB308"></div>
+        <h3>Ankle</h3>
+        <p>How far feet leave the ground — direct measure of explosive jump power. Unaffected by height or arm length.</p>
+        <div class="kp-result">ID5 won — more athletic leap</div>
+      </div>
+    </div>
+    <div class="displacement-note">
+      DISPLACEMENT METRIC = start position → peak position &nbsp;·&nbsp;
+      <span>Removes starting stance bias</span> &nbsp;·&nbsp;
+      <span>True measure of explosive power</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: JUMP BALL ANALYSIS ══ -->
+  <div class="slide" id="s7">
+    <div class="slide-label">Jump Ball Analysis</div>
+    <h2>Shorter player nearly wins <span>· Here's what the data shows</span></h2>
+    <!-- Step pip indicators -->
+    <div id="s6-steps">
+      <div class="step-pip" id="pip-0"></div>
+      <div class="step-pip" id="pip-1"></div>
+      <div class="step-pip" id="pip-2"></div>
+      <div class="step-pip" id="pip-3"></div>
+    </div>
+    <div class="accent-bar"></div>
+    <div class="scorecard-grid">
+      <div class="scorecard">
+        <div class="card-header">
+          <div class="player-id" style="color:var(--cyan)">ID 6</div>
+          <div class="player-desc">Taller Player</div>
+        </div>
+        <div class="metrics">
+          <div class="metric-row reveal-item" data-reveal="0"><span class="metric-name"><span class="metric-dot" style="background:#22C55E"></span>Wrist reach</span><span class="won">Won</span></div>
+          <div class="metric-row reveal-item" data-reveal="1"><span class="metric-name"><span class="metric-dot" style="background:#A855F7"></span>Hip elevation</span><span class="won">Won</span></div>
+          <div class="metric-row reveal-item" data-reveal="2"><span class="metric-name"><span class="metric-dot" style="background:#EAB308"></span>Ankle height</span><span class="lost">Lost</span></div>
+          <div class="metric-row reveal-item" data-reveal="3"><span class="metric-name"><span class="metric-dot" style="background:var(--muted)"></span>Total travel</span><span class="travel">↑ 68px</span></div>
+        </div>
+      </div>
+      <div class="scorecard">
+        <div class="card-header">
+          <div class="player-id" style="color:var(--orange)">ID 5</div>
+          <div class="player-desc">Shorter Player</div>
+        </div>
+        <div class="metrics">
+          <div class="metric-row reveal-item" data-reveal="0"><span class="metric-name"><span class="metric-dot" style="background:#22C55E"></span>Wrist reach</span><span class="lost">Lost</span></div>
+          <div class="metric-row reveal-item" data-reveal="1"><span class="metric-name"><span class="metric-dot" style="background:#A855F7"></span>Hip elevation</span><span class="lost">Lost</span></div>
+          <div class="metric-row reveal-item" data-reveal="2"><span class="metric-name"><span class="metric-dot" style="background:#EAB308"></span>Ankle height</span><span class="won">Won</span></div>
+          <div class="metric-row reveal-item" data-reveal="3"><span class="metric-name"><span class="metric-dot" style="background:var(--muted)"></span>Total travel</span><span class="travel" style="color:var(--orange)">↑ 94px</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="insight reveal-item" data-reveal="4" id="s6-insight">
+      <span class="bulb">💡</span>
+      <span><strong>ID5 had 38% more vertical travel</strong> — the shorter player out-jumped ID6 explosively, but couldn't overcome the reach and height advantage</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: WHAT'S NEXT ══ -->
+  <div class="slide" id="s8">
+    <div class="slide-label">Roadmap</div>
+    <h2>What's Next <span>· Building on this prototype</span></h2>
+    <div class="accent-bar"></div>
+    <div class="next-grid">
+      <div class="next-card"><div class="next-icon">🗺️</div><div><h3>Court Homography</h3><p>Map pixel coords → real court feet/meters for true distance analytics</p></div></div>
+      <div class="next-card"><div class="next-icon">🏃</div><div><h3>Action Classification</h3><p>Detect shots, passes, screens using keypoint sequence classifiers</p></div></div>
+      <div class="next-card"><div class="next-icon">🔢</div><div><h3>Jersey OCR</h3><p>Read jersey numbers to identify specific named players automatically</p></div></div>
+      <div class="next-card"><div class="next-icon">🏀</div><div><h3>Ball Tracking</h3><p>Fine-tune detection for fast-moving basketball, track possession changes</p></div></div>
+      <div class="next-card"><div class="next-icon">⚡</div><div><h3>Pipeline Optimization</h3><p>Single-model pass, batched inference — target 2× speed improvement</p></div></div>
+      <div class="next-card"><div class="next-icon">📹</div><div><h3>Multi-Camera</h3><p>Fuse views from multiple angles for complete court coverage</p></div></div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: APPENDIX ══ -->
+  <div class="slide" id="s9">
+    <div class="slide-label">Appendix</div>
+    <h2>Technical Stack <span>· Configuration</span></h2>
+    <div class="accent-bar"></div>
+    <table class="tech-table">
+      <thead>
+        <tr><th>Component</th><th>Tool / Setting</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Detection</td><td>YOLOv8x</td><td>COCO class 0 (person), class 32 (ball)</td></tr>
+        <tr><td>Tracking</td><td>ByteTrack (supervision)</td><td>Consistent IDs across frames</td></tr>
+        <tr><td>Pose</td><td>YOLOv8x-pose</td><td>17 COCO keypoints per person</td></tr>
+        <tr><td>Stabilization</td><td>OpenCV optical flow</td><td>smoothing_radius = 30</td></tr>
+        <tr><td>Frame sampling</td><td>PROCESS_EVERY_N = 2</td><td>Every other frame processed</td></tr>
+        <tr><td>Conf. threshold</td><td>0.35</td><td>Tunable — lower for more detections</td></tr>
+        <tr><td>Min frames filter</td><td>40</td><td>Removes short-lived false positives</td></tr>
+        <tr><td>Excluded IDs</td><td>3, 8, 11</td><td>Ref + 2 fans — ground-truth manual exclusion</td></tr>
+        <tr><td>Runtime</td><td>Google Colab T4 GPU</td><td>~15GB VRAM, free tier</td></tr>
+        <tr><td>Output formats</td><td>JSON, CSV, MP4</td><td>Frame-level + player-level data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div id="slide-counter">01 / 09</div>
+<div id="nav">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot" onclick="goTo(5)"></div>
+  <div class="dot" onclick="goTo(6)"></div>
+  <div class="dot" onclick="goTo(7)"></div>
+  <div class="dot" onclick="goTo(8)"></div>
+</div>
+<div id="nav-arrows">
+  <div class="arrow" onclick="prev()">‹</div>
+  <div class="arrow" onclick="next()">›</div>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  const counter = document.getElementById('slide-counter');
+  const vidOrig = document.getElementById('vid-orig');
+  const vidOverlay = document.getElementById('vid-overlay');
+  const vidSolo = document.getElementById('vid-solo');
+  let playing = false;
+  let playingSolo = false;
+  let currentSpeed = 0.3;
+  let currentSpeedSolo = 0.3;
+  let revealTimer = null;
+
+  function startRevealTimer() {
+    clearInterval(revealTimer);
+    revealTimer = setInterval(() => {
+      if (revealStep < REVEAL_TOTAL - 1) {
+        setRevealStep(revealStep + 1);
+      } else {
+        clearInterval(revealTimer);
+      }
+    }, 1000);
+  }
+
+  function stopRevealTimer() {
+    clearInterval(revealTimer);
+    revealTimer = null;
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    // Reset reveal state whenever we leave or arrive at the reveal slide
+    if (current === REVEAL_SLIDE || n === REVEAL_SLIDE) resetReveal();
+    if (current === REVEAL_SLIDE) stopRevealTimer();
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / 09';
+
+    // Auto-reveal timer on slide 7 (index 6)
+    if (current === REVEAL_SLIDE) startRevealTimer();
+
+    // Auto-play solo video on slide 2 (index 1)
+    if (current === 1) {
+      syncPlaySolo();
+    } else {
+      vidSolo.pause();
+      playingSolo = false;
+      document.getElementById('btn-play-solo').textContent = '▶ Play';
+    }
+
+    // Auto-play dual videos on slide 5 (index 4)
+    if (current === 4) {
+      syncPlay();
+    } else {
+      vidOrig.pause();
+      vidOverlay.pause();
+      playing = false;
+      document.getElementById('btn-play').textContent = '▶ Play';
+    }
+  }
+
+  // ── REVEAL SYSTEM for slide 6 (index 5) ──
+  // Steps: 0=Wrist, 1=Hip, 2=Ankle, 3=Total travel, 4=Insight
+  const REVEAL_SLIDE = 6;       // slide index (0-based) that has sub-steps
+  const REVEAL_TOTAL = 5;       // number of reveal steps (0–4)
+  let revealStep = -1;          // -1 = nothing revealed yet
+
+  function setRevealStep(step) {
+    revealStep = step;
+    // Show all items at or below current step
+    document.querySelectorAll('#s7 .reveal-item').forEach(el => {
+      const r = parseInt(el.dataset.reveal);
+      if (r <= revealStep) el.classList.add('revealed');
+      else el.classList.remove('revealed');
+    });
+    // Update pips (0–3 for metrics, pip 3 also lights on insight reveal)
+    for (let i = 0; i < 4; i++) {
+      const pip = document.getElementById('pip-' + i);
+      if (pip) pip.classList.toggle('lit', i <= Math.min(revealStep, 3));
+    }
+  }
+
+  function resetReveal() {
+    setRevealStep(-1);
+  }
+
+  function next() {
+    // If on the reveal slide and not fully revealed, advance one reveal step
+    if (current === REVEAL_SLIDE && revealStep < REVEAL_TOTAL - 1) {
+      setRevealStep(revealStep + 1);
+    } else if (current < slides.length - 1) {
+      goTo(current + 1);
+    }
+  }
+
+  function prev() {
+    // If on the reveal slide and something is revealed, step back
+    if (current === REVEAL_SLIDE && revealStep >= 0) {
+      setRevealStep(revealStep - 1);
+    } else if (current > 0) {
+      goTo(current - 1);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) next(); else prev();
+    }
+  }, { passive: true });
+
+  // Solo video controls (slide 2)
+  function syncPlaySolo() {
+    vidSolo.playbackRate = currentSpeedSolo;
+    vidSolo.play();
+    playingSolo = true;
+    document.getElementById('btn-play-solo').textContent = '⏸ Pause';
+  }
+
+  function togglePlaySolo() {
+    if (playingSolo) {
+      vidSolo.pause();
+      playingSolo = false;
+      document.getElementById('btn-play-solo').textContent = '▶ Play';
+    } else {
+      syncPlaySolo();
+    }
+  }
+
+  function setSoloSpeed(s) {
+    currentSpeedSolo = s;
+    vidSolo.playbackRate = s;
+    document.getElementById('speed-display-solo').textContent = s + '×';
+    document.querySelectorAll('#s2 .ctrl-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Dual video controls (slide 5)
+  function syncPlay() {
+    vidOrig.playbackRate = currentSpeed;
+    vidOverlay.playbackRate = currentSpeed;
+    vidOrig.play();
+    vidOverlay.play();
+    playing = true;
+    document.getElementById('btn-play').textContent = '⏸ Pause';
+  }
+
+  function togglePlay() {
+    if (playing) {
+      vidOrig.pause(); vidOverlay.pause();
+      playing = false;
+      document.getElementById('btn-play').textContent = '▶ Play';
+    } else {
+      syncPlay();
+    }
+  }
+
+  function setSpeed(s) {
+    currentSpeed = s;
+    vidOrig.playbackRate = s;
+    vidOverlay.playbackRate = s;
+    document.getElementById('speed-display').textContent = s + '×';
+    document.querySelectorAll('#s5 .ctrl-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Set initial playback rates
+  window.addEventListener('load', () => {
+    vidSolo.playbackRate = 0.3;
+    vidOrig.playbackRate = 0.3;
+    vidOverlay.playbackRate = 0.3;
+  });
+</script>
+
+</body>
